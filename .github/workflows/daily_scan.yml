@@ -1,0 +1,32 @@
+name: Resmi Gazete Gunluk Tarama
+
+on:
+  schedule:
+    # Her gun Turkiye saatiyle 10:00'da calisir (UTC 07:00)
+    - cron: '0 7 * * *'
+  workflow_dispatch: # Manuel calistirmak icin buton ekler
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Depoyu Kopyala
+        uses: actions/checkout@v3
+
+      - name: Python Kurulumu
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Bagimliliklari Yukle
+        run: |
+          pip install requests beautifulsoup4
+
+      - name: Taramayi Baslat
+        run: python resmi_gazete_scraper.py
+
+      - name: Raporu Kaydet
+        uses: actions/upload-artifact@v3
+        with:
+          name: resmi-gazete-raporu
+          path: gunluk_rapor.txt
